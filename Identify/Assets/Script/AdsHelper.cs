@@ -75,7 +75,9 @@ public class AdsHelper : MonoBehaviour
 
   public void RequestRectangleBannerAds(CommonAction onclosed)
   {
-
+#if !UNITY_ANDROID
+    return;
+#endif
     if (RectanglebannerView != null)
       return;
 
@@ -157,6 +159,10 @@ public class AdsHelper : MonoBehaviour
   public void RequestBannerAds(AdPosition postion, CommonAction onclosed)
   {
 
+#if !UNITY_ANDROID
+    return;
+#endif
+
     if (bannerView != null)
       return;
 
@@ -220,7 +226,9 @@ public class AdsHelper : MonoBehaviour
 
   public void RequestInterstitialAds()
   {
-
+#if !UNITY_ANDROID
+    return;
+#endif
     if (interstitial != null)
       return;
 
@@ -277,8 +285,10 @@ public class AdsHelper : MonoBehaviour
   private RewardedAd rewardedAd;
   public void RequestRewardAds()
   {
-
-    if(rewardedAd != null){
+#if !UNITY_ANDROID
+    return;
+#endif
+    if (rewardedAd != null){
       rewardedAd.Destroy();
       rewardedAd = null;
     }

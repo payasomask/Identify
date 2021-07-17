@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class JsonLoader : MonoBehaviour
@@ -22,7 +23,7 @@ public class JsonLoader : MonoBehaviour
   public void Init(){
     //start init
 
-    Dictionary<string,object> jsontable = (Dictionary<string, object>)MiniJSON.Json.Deserialize(getJson().text);
+    Dictionary<string,object> jsontable = (Dictionary<string, object>)MiniJSON.Json.Deserialize(getJson());
     Dictionary<string, object> tablesheets = (Dictionary<string, object>)jsontable["N01_Identify_Setup.xlsx"];
 
     //parse string_sheet
@@ -76,9 +77,17 @@ public class JsonLoader : MonoBehaviour
 
 
 
-  TextAsset getJson(){
+  string getJson(){
+    string json_text;
+#if UNITY_ANDROID || UNITY_EDITOR
     TextAsset t = (TextAsset)Resources.Load("N01_Identify_Setup.xlsx");
-    return t;
+    json_text = t.text;
+#elif UNITY_STANDALONE_WIN
+    string file_path = Path.Combine(Application.streamingAssetsPath, "N01_Identify_Setup.xlsx.json");
+    return File.ReadAllText(file_path);
+#endif
+
+    return json_text;
   }
 
   public string GetString(string key){

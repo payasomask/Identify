@@ -278,7 +278,8 @@ public class GameScene : MonoBehaviour,IScene
 
     else if (currentstate == state.summary)
     {
-      AudioController._AudioController.crossFadeBGM("BGM_02");
+      AudioController._AudioController.crossFadeBGM("Sound_02");
+      AudioController._AudioController.fadeOut(AudioController.Channel.BGM);
 
       //判斷是不是更好紀錄
       PlayerPrefsManager._PlayerPrefsManager.updateRecord(level, msd.time, msd.correct);
@@ -341,6 +342,7 @@ public class GameScene : MonoBehaviour,IScene
       incorrect = 0,
       time = 0.0f
     };
+    AudioController._AudioController.play("BGM_44", true);
     currentstate = state.IDLE;
   }
 
@@ -381,7 +383,7 @@ public class GameScene : MonoBehaviour,IScene
 
     resetTimer();
     updateAmount(currentquestion);
-
+    AudioController._AudioController.play("BGM_44", true);
     currentstate = state.IDLE;
   }
 

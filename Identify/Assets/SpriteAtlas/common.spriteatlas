@@ -44,45 +44,33 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 40ef02399cd6a6b429b0ee302da2f08d, type: 3}
-    totalSpriteSurfaceArea: 1143359
+    totalSpriteSurfaceArea: 2544537
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
-  - {fileID: 21300000, guid: ded57f60285fa1a47b65677b33dad52c, type: 3}
   - {fileID: 21300000, guid: 81642bc11076fdf428e28e36848f3d15, type: 3}
-  - {fileID: 21300000, guid: 531aeae24e331374ab206f06173cf70b, type: 3}
   - {fileID: 21300000, guid: 01ceb5830cd1e844d86f8ca3f6754b54, type: 3}
-  - {fileID: 21300000, guid: 906b01f3690cad246bbcc67646de6a17, type: 3}
-  - {fileID: 21300000, guid: 422f94044bcda7143acf3a27f2d3754b, type: 3}
-  - {fileID: 21300000, guid: 64bea806cc3daf9439e30c0545d96874, type: 3}
+  - {fileID: 21300000, guid: ec9e4b834d7aea94a98cc83d4224589c, type: 3}
+  - {fileID: 21300000, guid: 8de6f60421cf1f6449ad6973b9ebb82f, type: 3}
+  - {fileID: 21300000, guid: e6263e36e0eee364c924efa489f0918e, type: 3}
   - {fileID: 21300000, guid: 487b3e67e4a6df7488756178563d7488, type: 3}
-  - {fileID: 21300000, guid: 25d1bce8f775da34e91fd6b006f5ac7c, type: 3}
-  - {fileID: 21300000, guid: 441863592d8f79e44b5aca50d2be2c15, type: 3}
-  - {fileID: 21300000, guid: 42bb4a5989466bb4685c3b0a8115d553, type: 3}
-  - {fileID: 21300000, guid: f23cfe5ad851c3444a7a5278011b0cf6, type: 3}
-  - {fileID: 21300000, guid: 8067bf1b66ce701448d84622fb7120b9, type: 3}
-  - {fileID: 21300000, guid: d390a41ebe5f83c4e89a77f66936760c, type: 3}
-  - {fileID: 21300000, guid: 3fa2626e2c1d33f4c8861f93f13daa11, type: 3}
-  - {fileID: 21300000, guid: bdec303fc86e6f74cbfcf9db0bce022a, type: 3}
+  - {fileID: 21300000, guid: 99b477780fd8a684d83c718c54a0c23a, type: 3}
+  - {fileID: 21300000, guid: 9a66d6c9f59f2bc49849411e518c2b4b, type: 3}
+  - {fileID: 21300000, guid: 2b058e4c52312ba46b60af3ccc81c372, type: 3}
+  - {fileID: 21300000, guid: 5ef1390f9925b564e80ac619e3e8d81b, type: 3}
   m_PackedSpriteNamesToIndex:
-  - play_gray
   - ButtonDifferent
-  - item_ban_cover
   - white_pt
-  - toch
-  - play
-  - button_banner
+  - UI2
+  - X
+  - ButtonBack
   - intro
-  - no_button
-  - info_banner
-  - 8x8
-  - inn_point
-  - dark_maze
-  - button
-  - pause
-  - player_mark
+  - UI1
+  - O
+  - Side
+  - ButtonSame
   m_RenderDataMap: {}
   m_Tag: common
   m_IsVariant: 0
