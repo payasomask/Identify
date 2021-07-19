@@ -263,7 +263,7 @@ public class LobbyScene : MonoBehaviour,IScene
       float correctrate = JsonLoader._JsonLoader.GetCorrectRate(v.Value.level, v.Value.correct);
       //totalgetstar += 
 
-      leveltexts += "<size=50%>" + string.Format(JsonLoader._JsonLoader.GetString("507"), v.Value.level);
+      leveltexts += "<size=80%>" + string.Format(JsonLoader._JsonLoader.GetString("507"), v.Value.level);
       leveltexts += string.Format(JsonLoader._JsonLoader.GetString("508"), v.Value.time);
       leveltexts += string.Format(JsonLoader._JsonLoader.GetString("509"), timerate);
       leveltexts += string.Format(JsonLoader._JsonLoader.GetString("510"), correctrate) + "\n";

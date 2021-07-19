@@ -154,7 +154,10 @@ public class LevelScene : MonoBehaviour,IScene
         //不能玩的關卡灰掉
         if (level > currentmaxlevel){
           bt.interactable = false;
+          //更換圖
+          bt.image.sprite = AssetbundleLoader._AssetbundleLoader.InstantiateSprite("common", "ButtonLevelG");
         }
+
         bt.onClick.AddListener(()=> {
           OnLevel_bt_Click(bt.name);
         });
