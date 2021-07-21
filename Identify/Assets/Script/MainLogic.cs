@@ -250,20 +250,21 @@ public class PlayerPrefsManager
 
     PlayerPrefs.Save();
   }
-  bool convertOnOff2bool(string name)
+  public bool convertOnOff2bool(string name)
   {
     if (name.Equals("on"))
       return true;
 
     return false;
   }
-  string convertbool2OnOff(bool OnOff)
+  public string convertbool2OnOff(bool OnOff)
   {
     if (OnOff)
       return "on";
 
     return "off";
   }
+
   Dictionary<string, object> pauseSaveDic = new Dictionary<string, object>();
   public void OnPause()
   {

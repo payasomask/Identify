@@ -38,8 +38,8 @@ public class summaryDialog :  IDialogContext
     int level = PlayerPrefsManager._PlayerPrefsManager.currentlevel;
 
     GameDataConfig config = JsonLoader._JsonLoader.GetDataconfig(level.ToString());
-    float timeRate = JsonLoader._JsonLoader.GetTimeRate(PlayerPrefsManager._PlayerPrefsManager.currentlevel.ToString(),time);
-    float correctRate = JsonLoader._JsonLoader.GetCorrectRate(PlayerPrefsManager._PlayerPrefsManager.currentlevel.ToString(), correct);
+    float timeRate = JsonLoader._JsonLoader.GetTimeRate(PlayerPrefsManager._PlayerPrefsManager.currentlevel.ToString(),time)*100.0f;
+    float correctRate = JsonLoader._JsonLoader.GetCorrectRate(PlayerPrefsManager._PlayerPrefsManager.currentlevel.ToString(), correct) * 100.0f;
     int star = JsonLoader._JsonLoader.GetStar(PlayerPrefsManager._PlayerPrefsManager.currentlevel.ToString(), time, correct);
 
     string summary_text = string.Format(JsonLoader._JsonLoader.GetString("401"), time, timeRate) + "\n";

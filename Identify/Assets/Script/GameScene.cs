@@ -9,6 +9,7 @@ public class GameScene : MonoBehaviour,IScene
   string secneName;
   SceneDisposeHandler pDisposeHandler = null;
   bool mInited = false;
+  bool debug = true;
 
   //game
   GameDataConfig config;
@@ -16,11 +17,13 @@ public class GameScene : MonoBehaviour,IScene
   float time;
   Vector2 area = new Vector2(384, 700);
   float cellsize;
+  float point_icon_size = 0.9f;
   List<GameObject> right_point_list;
   List<GameObject> left_point_list;
   TextMeshPro timer_text = null;
   GameObject correct_go= null;//正確不正確共用
   summaryData msd = null;
+  SliceBarController mtimeslicebar = null;
   string level;
   class summaryData{
     public float time;//使用多久時間
@@ -89,8 +92,8 @@ public class GameScene : MonoBehaviour,IScene
     }
 
     currentquestion = 1;
-    timer_text = mRoot.transform.Find("time").GetComponent<TextMeshPro>();
-
+    timer_text = mRoot.transform.Find("slicebar/time").GetComponent<TextMeshPro>();
+    mtimeslicebar = mRoot.transform.Find("slicebar").GetComponent<SliceBarController>();
     resetTimer();
     updateAmount(currentquestion);
     //correct_go = mRoot.transform.Find("correct").gameObject;
@@ -175,10 +178,11 @@ public class GameScene : MonoBehaviour,IScene
     // Update is called once per frame
     void Update()
     {
-    //if (Input.GetKeyUp(KeyCode.R)){
-    //  resetQuestion();
-    //  resetTimer();
-    //}
+    if (Input.GetKeyUp(KeyCode.R))
+    {
+      resetQuestion();
+      resetTimer();
+    }
 
     if (Input.GetKeyUp(KeyCode.C))
     {
@@ -204,12 +208,12 @@ public class GameScene : MonoBehaviour,IScene
       time -= Time.deltaTime;
       msd.time += Time.deltaTime;
 
-      updateTime(time);
       if (time <= 0.0f){
         time = 0.0f;
         currentstate = state.Incorrect;
       }
 
+      updateTime(time);
     }
 
     else if (currentstate == state.SAME)
@@ -317,7 +321,8 @@ public class GameScene : MonoBehaviour,IScene
       return;
 
     timer_text.text = time.ToString("F02");
-
+    float time_normalized = time / config.Time;
+    mtimeslicebar.setNormalized(time_normalized);
   }
 
   public void resetTimer(){
@@ -396,7 +401,7 @@ public class GameScene : MonoBehaviour,IScene
   }
 
   void updateAmount(int currentquestion){
-    mRoot.transform.Find("amount").GetComponent<TextMeshPro>().text = currentquestion + "/" + config.Amount;
+    mRoot.transform.Find("amount_bg/amount").GetComponent<TextMeshPro>().text = currentquestion + "/" + config.Amount;
   }
 
   void showcorrect(bool correct){
@@ -413,7 +418,6 @@ public class GameScene : MonoBehaviour,IScene
     GameLogic.Point[,] rightpoints = GameLogic._GameLogic.GetRightPoints();
     GameLogic.Point[,] leftpoints = GameLogic._GameLogic.GetLeftPoints();
 
-    float point_icon_size = 0.9f;
     float area_size = 0.9f;
 
 
@@ -435,13 +439,13 @@ public class GameScene : MonoBehaviour,IScene
         GameObject point = right_point_list[index];
 
         point.transform.localPosition = new Vector3(rightpoints[i, j].position.x + area.x * 0.5f, rightpoints[i, j].position.y + 75);
-        point.transform.localScale = new Vector3(cellsize * point_icon_size, cellsize * point_icon_size, 1.0f);
+        point.transform.Find("Icon").localScale = new Vector3(cellsize * point_icon_size, cellsize * point_icon_size, 1.0f);
         point.transform.Find("Icon").GetComponent<SpriteRenderer>().color = Color.HSVToRGB(Mathf.InverseLerp(0,360, rightpoints[i, j].HSV.H) , Mathf.InverseLerp(0, 100, rightpoints[i, j].HSV.S), Mathf.InverseLerp(0, 100, rightpoints[i, j].HSV.V));
 
         point = left_point_list[index];
 
         point.transform.localPosition = new Vector3(leftpoints[i, j].position.x - area.x * 0.5f, leftpoints[i, j].position.y + 75);
-        point.transform.localScale = new Vector3(cellsize * point_icon_size, cellsize * point_icon_size, 1.0f);
+        point.transform.Find("Icon").localScale = new Vector3(cellsize * point_icon_size, cellsize * point_icon_size, 1.0f);
         point.transform.Find("Icon").GetComponent<SpriteRenderer>().color = Color.HSVToRGB(Mathf.InverseLerp(0, 360, leftpoints[i, j].HSV.H), Mathf.InverseLerp(0, 100, leftpoints[i, j].HSV.S), Mathf.InverseLerp(0, 100, leftpoints[i, j].HSV.V));
 
       }
@@ -450,6 +454,43 @@ public class GameScene : MonoBehaviour,IScene
 
     mRoot.transform.Find("rightarea").localScale = new Vector3(area_size, area_size, 1.0f);
     mRoot.transform.Find("leftarea").localScale = new Vector3(area_size, area_size, 1.0f);
+    updateDebugInfo();
+  }
 
+  void updateDebugInfo(){
+    if (!debug)
+      return;
+    mRoot.transform.Find("debugtext").gameObject.SetActive(true);
+    mRoot.transform.Find("debugtext").GetComponent<TextMeshPro>().text = GameLogic._GameLogic.GetAnswer();
+
+    GameLogic.Point[,] rightpoints = GameLogic._GameLogic.GetRightPoints();
+    GameLogic.Point[,] leftpoints = GameLogic._GameLogic.GetLeftPoints();
+
+    float textshowsize = cellsize * point_icon_size;
+
+    for (int i = 0; i < config.H; i++)
+    {
+      for (int j = 0; j < config.W; j++)
+      {
+        int index = i * config.W + j;
+
+        GameObject point = right_point_list[index];
+        point.transform.Find("debugtext").gameObject.SetActive(true);
+        point.transform.Find("debugtext").GetComponent<TextMeshPro>().text = getHSV_string(rightpoints[i,j]);
+        point.transform.Find("debugtext").GetComponent<RectTransform>().sizeDelta = new Vector2(textshowsize, textshowsize);
+        point = left_point_list[index];
+        point.transform.Find("debugtext").gameObject.SetActive(true);
+        point.transform.Find("debugtext").GetComponent<TextMeshPro>().text = getHSV_string(leftpoints[i, j]);
+        point.transform.Find("debugtext").GetComponent<RectTransform>().sizeDelta = new Vector2(textshowsize, textshowsize);
+      }
+    }
+  }
+
+
+  string getHSV_string(GameLogic.Point p){
+    string hsv_string = "H : " + p.HSV.H + "\n";
+    hsv_string += "S : " + p.HSV.S + "\n";
+    hsv_string += "V : " + p.HSV.V;
+    return hsv_string;
   }
 }

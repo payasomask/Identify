@@ -9,13 +9,6 @@ public class LobbyScene : MonoBehaviour,IScene
   SceneDisposeHandler pDisposeHandler = null;
   private bool mInited = false;
   GameObject Root;
-  enum State
-  {
-    NULL = 0,
-    DONE,
-  }
-
-  State currentstate = State.NULL;
 
   public void disposeScene(bool forceDispose)
   {
@@ -61,9 +54,7 @@ public class LobbyScene : MonoBehaviour,IScene
     GameObject RecordUI = Root.transform.Find("RecordUI").gameObject;
 
     AdsHelper._AdsHelper.RequestBannerAds(GoogleMobileAds.Api.AdPosition.Top,null);
-    //AdsHelper._AdsHelper.RequestInterstitialAds();
 
-    //UIDialog._UIDialog.show(new summaryDialog(1f,3, null));
 
     ShowLobby();
     return;
@@ -105,8 +96,7 @@ public class LobbyScene : MonoBehaviour,IScene
         pDisposeHandler(SceneDisposeReason.USER_ACTION, null);
         return;
       }
-      else
-      if (name == "record_bt")
+      else if (name == "record_bt")
       {
         //設定一些東西
         GameObject slidertext = Root.transform.Find("RecordUI/ScreenSliderTextMesh").gameObject;
@@ -128,6 +118,15 @@ public class LobbyScene : MonoBehaviour,IScene
       {
         ShowLobby();
       }
+      else if(name == "sound_bt"){
+        bool onoff = PlayerPrefsManager._PlayerPrefsManager.convertOnOff2bool(PlayerPrefsManager._PlayerPrefsManager.Music_T);
+        PlayerPrefsManager._PlayerPrefsManager.Music_T = PlayerPrefsManager._PlayerPrefsManager.convertbool2OnOff(!onoff);
+
+        onoff = PlayerPrefsManager._PlayerPrefsManager.convertOnOff2bool(PlayerPrefsManager._PlayerPrefsManager.Audio_T);
+        PlayerPrefsManager._PlayerPrefsManager.Audio_T = PlayerPrefsManager._PlayerPrefsManager.convertbool2OnOff(!onoff);
+        
+        updateUI();
+      }
     }
 
   }
@@ -138,10 +137,6 @@ public class LobbyScene : MonoBehaviour,IScene
     g.transform.SetParent(parent.transform, true);
 
     return g;
-  }
-
-  void updateUI(){
-
   }
 
   void InitBg(){
@@ -259,8 +254,8 @@ public class LobbyScene : MonoBehaviour,IScene
       totallevelsamont += config.Amount;
       totalcorrect += v.Value.correct;
 
-      float timerate = JsonLoader._JsonLoader.GetTimeRate(v.Value.level, v.Value.time);
-      float correctrate = JsonLoader._JsonLoader.GetCorrectRate(v.Value.level, v.Value.correct);
+      float timerate = JsonLoader._JsonLoader.GetTimeRate(v.Value.level, v.Value.time)*100.0f;
+      float correctrate = JsonLoader._JsonLoader.GetCorrectRate(v.Value.level, v.Value.correct) * 100.0f;
       //totalgetstar += 
 
       leveltexts += "<size=80%>" + string.Format(JsonLoader._JsonLoader.GetString("507"), v.Value.level);
@@ -270,8 +265,8 @@ public class LobbyScene : MonoBehaviour,IScene
     }
 
 
-    float avg_time = totalusedtime / totallevelstime;
-    float avg_correct = totalcorrect / totallevelsamont;
+    float avg_time = totalusedtime / totallevelstime * 100.0f;
+    float avg_correct = (float)totalcorrect / totallevelsamont * 100.0f;
     //float avg_star = 
 
     string uptext = "<b>" +  JsonLoader._JsonLoader.GetString("501") + "</b>\n";
@@ -285,8 +280,7 @@ public class LobbyScene : MonoBehaviour,IScene
   }
 
   string getStaffText(){
-    int startindex = 601;
-    int endindex = 609;
+
     string text = JsonLoader._JsonLoader.GetString("601") + "\n";
     text += JsonLoader._JsonLoader.GetString("602") + "\n\n";
     text += JsonLoader._JsonLoader.GetString("603") + "\n";
@@ -298,5 +292,10 @@ public class LobbyScene : MonoBehaviour,IScene
     text += JsonLoader._JsonLoader.GetString("609");
 
     return text;
+  }
+
+  void updateUI(){
+    Sprite sound_s = AssetbundleLoader._AssetbundleLoader.InstantiateSprite("common", "Sound" + PlayerPrefsManager._PlayerPrefsManager.Music_T);
+    Root.transform.Find("LobbyUI/sound_bt/icon").GetComponent<SpriteRenderer>().sprite = sound_s;
   }
 }

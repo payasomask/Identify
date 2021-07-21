@@ -111,13 +111,11 @@ public class GameLogic : MonoBehaviour
 
     Vector2 offset_pivot = UtilityHelper.MazePoint(config.W * cellsize, config.H * cellsize);
 
-    bool diff = UtilityHelper.Random01() >= config.DifferenceRate;
+
+    bool diff = UtilityHelper.Random01() <= config.DifferenceRate;
     //bool diff = false;
 
-    if (!diff){
-      different_list = new Point[config.H * config.W];
-      questionanswer = QuestionAnswer.Different;
-    }
+    different_list = new Point[config.H * config.W];
 
     for (int i = 0; i < config.H; i++)
     {
@@ -149,7 +147,7 @@ public class GameLogic : MonoBehaviour
           };
 
         //一樣的話就不用
-        if (diff)
+        if (!diff)
           continue;
 
         different_list[index] = right_point_maxtra[i, j];
@@ -157,10 +155,12 @@ public class GameLogic : MonoBehaviour
       }
     }
 
-    if (diff){
+    if (!diff){
       //一樣
+      questionanswer = QuestionAnswer.Same;
       return;
     }
+    questionanswer = QuestionAnswer.Different;
 
     //將這個洗牌，用來挑選隨機的點
     UtilityHelper.Shuffle(ref different_list);
@@ -193,7 +193,7 @@ public class GameLogic : MonoBehaviour
     UtilityHelper.Shuffle(ref HSV_arr);
 
 
-    bool diff = UtilityHelper.Random01() >= config.DifferenceRate;;
+    bool diff = UtilityHelper.Random01() <= config.DifferenceRate;;
 
     for (int i = 0; i < config.H; i++)
     {
@@ -211,17 +211,24 @@ public class GameLogic : MonoBehaviour
         }
         right_point_maxtra[i, j].HSV = hsv;
         left_point_maxtra[i, j].HSV = hsv;
+
+        //一樣的話就不用
+        if (!diff)
+          continue;
+
+        different_list[index] = right_point_maxtra[i, j];
         //Debug.Log("Cell座標 : [" + maze_cell_matrix[i, j].X + "，" + maze_cell_matrix[i, j].Y + "]的 Cell position : " + maze_cell_matrix[i,j].position);
       }
     }
 
-    if (diff)
+    if (!diff)
     {
       //一樣
       questionanswer = QuestionAnswer.Same;
       return;
     }
     questionanswer = QuestionAnswer.Different;
+
     //將這個洗牌，用來挑選隨機的點
     UtilityHelper.Shuffle(ref different_list);
 
@@ -386,5 +393,10 @@ public class GameLogic : MonoBehaviour
 
   public bool Correct(QuestionAnswer playeranswer){
     return playeranswer == questionanswer;
+  }
+
+  public string GetAnswer()
+  {
+    return questionanswer.ToString();
   }
 }

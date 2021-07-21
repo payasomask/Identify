@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer))]
-public class MLSpirte : MonoBehaviour
+public class MLSprite : MonoBehaviour
 {
 
   [SerializeField]

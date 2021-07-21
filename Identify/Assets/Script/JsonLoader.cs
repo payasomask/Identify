@@ -115,9 +115,18 @@ public class JsonLoader : MonoBehaviour
     return usetime / GetDataconfig(level).LevelTime;
   }
 
+  //public string GetTimeRateString(string level, float usetime)
+  //{
+  //  return string.Format("{0:F2}", (GetTimeRate(level, usetime) * 100.0f));
+  //}
+
   public float GetCorrectRate(string level, int correct){
-    return (float)correct / GetDataconfig(level).Amount;
+    return (float)correct / GetDataconfig(level).Amount ;
   }
+  //public string GetCorrectRateString(string level, int correct)
+  //{
+  //  return string.Format("{0:F2}", (GetCorrectRate(level, correct) * 100.0f).ToString());
+  //}
   public int GetStar(string level,float usetime , int correct)
   {
     float timerate = GetTimeRate(level,usetime);

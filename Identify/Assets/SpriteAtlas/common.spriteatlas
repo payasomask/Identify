@@ -33,6 +33,18 @@ SpriteAtlas:
       m_Overridden: 0
       m_AndroidETC2FallbackOverride: 0
       m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    - serializedVersion: 3
+      m_BuildTarget: Android
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 47
+      m_TextureCompression: 1
+      m_CompressionQuality: 100
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 1
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
     packingSettings:
       serializedVersion: 2
       padding: 8
@@ -44,12 +56,13 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 40ef02399cd6a6b429b0ee302da2f08d, type: 3}
-    totalSpriteSurfaceArea: 3485225
+    totalSpriteSurfaceArea: 5217277
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: 2edf52e07a6c24f489870a2a78c9702b, type: 3}
   - {fileID: 21300000, guid: 81642bc11076fdf428e28e36848f3d15, type: 3}
   - {fileID: 21300000, guid: 545cf7c2346c0834799138973ba2ce7b, type: 3}
   - {fileID: 21300000, guid: 01ceb5830cd1e844d86f8ca3f6754b54, type: 3}
@@ -57,14 +70,18 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 8de6f60421cf1f6449ad6973b9ebb82f, type: 3}
   - {fileID: 21300000, guid: 18822e95167d0964d82a96764e735982, type: 3}
   - {fileID: 21300000, guid: e6263e36e0eee364c924efa489f0918e, type: 3}
+  - {fileID: 21300000, guid: 9fa528b6814a49b46a9c18ecb9c9dcca, type: 3}
   - {fileID: 21300000, guid: 487b3e67e4a6df7488756178563d7488, type: 3}
   - {fileID: 21300000, guid: 99b477780fd8a684d83c718c54a0c23a, type: 3}
   - {fileID: 21300000, guid: 38bc18d880ee5fd47814396afa1b4766, type: 3}
   - {fileID: 21300000, guid: 9a66d6c9f59f2bc49849411e518c2b4b, type: 3}
   - {fileID: 21300000, guid: b471edca45487c14ab67e5573d4bcbe5, type: 3}
+  - {fileID: 21300000, guid: d483fbdb3be62d14c87ee8a800f7b9eb, type: 3}
   - {fileID: 21300000, guid: 2b058e4c52312ba46b60af3ccc81c372, type: 3}
+  - {fileID: 21300000, guid: 0a5ae91d55deca14c9b80d042af9a823, type: 3}
   - {fileID: 21300000, guid: 5ef1390f9925b564e80ac619e3e8d81b, type: 3}
   m_PackedSpriteNamesToIndex:
+  - Soundoff
   - ButtonDifferent
   - ButtonLevelG
   - white_pt
@@ -72,12 +89,15 @@ SpriteAtlas:
   - X
   - Title_TW
   - ButtonBack
+  - Cover
   - intro
   - UI1
   - Title_US
   - O
   - ButtonLevel
+  - Soundon
   - Side
+  - Under
   - ButtonSame
   m_RenderDataMap: {}
   m_Tag: common
