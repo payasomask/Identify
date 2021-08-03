@@ -185,6 +185,7 @@ MonoBehaviour:
   - {fileID: 6752617640218552583, guid: c80e88b250ea6d44f9687c4dd8a9dbb8, type: 3}
   - {fileID: 5415246219229230719, guid: 3daaa355028ac3141a9944df466fbb2d, type: 3}
   - {fileID: 2522469115644283004, guid: 94e9f6d0183b76e4f81d9558906aaabd, type: 3}
+  - {fileID: 5132498340685343417, guid: e35e0840cd9cc1d4a91fdced68f99f82, type: 3}
 --- !u!1 &668645274
 GameObject:
   m_ObjectHideFlags: 0
@@ -230,6 +231,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Texture_list:
   - {fileID: 4343727234628468602, guid: b6b28661fc844c84991976d271bb7719, type: 2}
+  - {fileID: 4343727234628468602, guid: 8517bd7eeaa24a842a9e2ab992c6f144, type: 2}
 --- !u!1 &844684450
 GameObject:
   m_ObjectHideFlags: 0
@@ -448,7 +450,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9f97f285914e8443af3bf7c97ae6103, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inited: 0
 --- !u!4 &1733576627
 Transform:
   m_ObjectHideFlags: 0

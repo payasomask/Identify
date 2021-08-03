@@ -80,11 +80,14 @@ public class LobbyScene : MonoBehaviour,IScene
     if(type == UIEventType.BUTTON){
       if (name == "play_bt"){
         //強制出現教學
-        PlayerPrefsManager._PlayerPrefsManager.tutorial = "off";
+        //PlayerPrefsManager._PlayerPrefsManager.tutorial = "off";
         if (PlayerPrefsManager._PlayerPrefsManager.tutorial == "off"){
           //顯示一張教學圖
           //..
           Root.transform.Find("LobbyUI/tutorail").gameObject.SetActive(true);
+          Root.transform.Find("LobbyUI/tutorail/tutorail_Icon").GetComponent<SpriteRenderer>().sprite = 
+            AssetbundleLoader._AssetbundleLoader.InstantiateSprite("tutorial", "Tutorial_" + 
+            PlayerPrefsManager._PlayerPrefsManager.Language);
           return;
         }
         else
@@ -99,9 +102,10 @@ public class LobbyScene : MonoBehaviour,IScene
       else if (name == "record_bt")
       {
         //設定一些東西
+        ShowRecord();
         GameObject slidertext = Root.transform.Find("RecordUI/ScreenSliderTextMesh").gameObject;
         slidertext.GetComponent<ScreenSliderTextMesh>().setText(getRecordText());
-        ShowRecord();
+        slidertext.GetComponent<ScreenSliderTextMesh>().setVerticalNormalizedPosition(1.0f);
       }
       else if (name == "staff_bt")
       {
@@ -245,7 +249,7 @@ public class LobbyScene : MonoBehaviour,IScene
     int totallevelstar = JsonLoader._JsonLoader.gettotallevelcount() * levelmaxstar;
     int totalgetstar = 0;
 
-    string leveltexts = "<b>" + JsonLoader._JsonLoader.GetString("506") + "</b>\n";
+    string leveltexts = JsonLoader._JsonLoader.GetString("506");
 
     foreach (var v in record){
       GameDataConfig config = JsonLoader._JsonLoader.GetDataconfig(v.Value.level);
@@ -256,24 +260,23 @@ public class LobbyScene : MonoBehaviour,IScene
 
       float timerate = JsonLoader._JsonLoader.GetTimeRate(v.Value.level, v.Value.time)*100.0f;
       float correctrate = JsonLoader._JsonLoader.GetCorrectRate(v.Value.level, v.Value.correct) * 100.0f;
-      //totalgetstar += 
+      totalgetstar += v.Value.star;
 
-      leveltexts += "<size=80%>" + string.Format(JsonLoader._JsonLoader.GetString("507"), v.Value.level);
+      leveltexts += string.Format(JsonLoader._JsonLoader.GetString("507"), v.Value.level);
       leveltexts += string.Format(JsonLoader._JsonLoader.GetString("508"), v.Value.time);
       leveltexts += string.Format(JsonLoader._JsonLoader.GetString("509"), timerate);
-      leveltexts += string.Format(JsonLoader._JsonLoader.GetString("510"), correctrate) + "\n";
+      leveltexts += string.Format(JsonLoader._JsonLoader.GetString("510"), correctrate);
     }
 
 
     float avg_time = totalusedtime / totallevelstime * 100.0f;
     float avg_correct = (float)totalcorrect / totallevelsamont * 100.0f;
-    //float avg_star = 
 
-    string uptext = "<b>" +  JsonLoader._JsonLoader.GetString("501") + "</b>\n";
-    uptext += string.Format(JsonLoader._JsonLoader.GetString("502"), record.Count) + "\n";
-    uptext += string.Format(JsonLoader._JsonLoader.GetString("503"), avg_time) + "\n";
-    uptext += string.Format(JsonLoader._JsonLoader.GetString("504"), avg_correct) + "\n\n";
-    //uptext += string.Format(JsonLoader._JsonLoader.GetString("505"), avg_star) + "\n";
+    string uptext = JsonLoader._JsonLoader.GetString("501");
+    uptext += string.Format(JsonLoader._JsonLoader.GetString("502"), record.Count);
+    uptext += string.Format(JsonLoader._JsonLoader.GetString("503"), avg_time);
+    uptext += string.Format(JsonLoader._JsonLoader.GetString("504"), avg_correct);
+    uptext += string.Format(JsonLoader._JsonLoader.GetString("505"), totalgetstar);
 
     uptext += leveltexts;
     return uptext;

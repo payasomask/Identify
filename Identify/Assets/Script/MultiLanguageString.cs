@@ -19,7 +19,7 @@ public class ml_string{
 			Debug.Log("143 - ml_string == null..return stringEmpty ");
 			return "";
     }
-		string curr_lan =PlayerPrefs.GetString("Language", "US");
+		string curr_lan = PlayerPrefsManager._PlayerPrefsManager.Language;
 		if (ps.lang_mapping_val.ContainsKey(curr_lan)){
 			return ps.lang_mapping_val[curr_lan];
 		}

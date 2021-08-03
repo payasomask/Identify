@@ -180,6 +180,8 @@ public class GameLogic : MonoBehaviour
         repeatcolor = repeatColor(new_hsv, right_point_maxtra);
       }
       tmp.HSV = new_hsv;
+      tmp.different = true;
+      left_point_maxtra[tmp.X, tmp.Y].different = true;
     }
 
   }
@@ -211,7 +213,8 @@ public class GameLogic : MonoBehaviour
         }
         right_point_maxtra[i, j].HSV = hsv;
         left_point_maxtra[i, j].HSV = hsv;
-
+        right_point_maxtra[i, j].different = false;
+        left_point_maxtra[i, j].different = false;
         //一樣的話就不用
         if (!diff)
           continue;
@@ -249,6 +252,8 @@ public class GameLogic : MonoBehaviour
         repeatcolor = repeatColor(new_hsv, right_point_maxtra);
       }
       tmp.HSV = new_hsv;
+      tmp.different = true;
+      left_point_maxtra[tmp.X, tmp.Y].different = true;
     }
 
   }
@@ -378,6 +383,7 @@ public class GameLogic : MonoBehaviour
     public int X, Y;
     public Vector2 position;
     public HSV HSV;
+    public bool different = false;
   }
   public class HSV{
     public int H, S, V;

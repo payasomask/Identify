@@ -9,7 +9,7 @@ public class GameScene : MonoBehaviour,IScene
   string secneName;
   SceneDisposeHandler pDisposeHandler = null;
   bool mInited = false;
-  bool debug = true;
+  bool debug = false;
 
   //game
   GameDataConfig config;
@@ -40,7 +40,7 @@ public class GameScene : MonoBehaviour,IScene
     SAME,
     DIFFERENT,
 
-    determination_start,
+    tip,
     correct,//判定對錯
     Incorrect,
     determination_done,
@@ -102,7 +102,7 @@ public class GameScene : MonoBehaviour,IScene
 
     AudioController._AudioController.play("BGM_44", true);
 
-    AdsHelper._AdsHelper.RequestBannerAds(GoogleMobileAds.Api.AdPosition.Top, null);
+    //AdsHelper._AdsHelper.RequestBannerAds(GoogleMobileAds.Api.AdPosition.Top, null);
 
 
     float cellwidth = area.x / config.W;
@@ -178,35 +178,34 @@ public class GameScene : MonoBehaviour,IScene
     // Update is called once per frame
     void Update()
     {
-    if (Input.GetKeyUp(KeyCode.R))
-    {
-      resetQuestion();
-      resetTimer();
-    }
+    //if (Input.GetKeyUp(KeyCode.R))
+    //{
+    //  resetQuestion();
+    //  resetTimer();
+    //}
 
-    if (Input.GetKeyUp(KeyCode.C))
-    {
-      //強制答對題目
-      bool correct = GameLogic._GameLogic.Correct(QuestionAnswer.Same);
-      if (correct)
-        MainLogic._MainLogic.setUIEvent("same_bt", UIEventType.BUTTON, null);
-      else
-        MainLogic._MainLogic.setUIEvent("different_bt", UIEventType.BUTTON, null);
-    }
+    //if (Input.GetKeyUp(KeyCode.C))
+    //{
+    //  //強制答對題目
+    //  bool correct = GameLogic._GameLogic.Correct(QuestionAnswer.Same);
+    //  if (correct)
+    //    MainLogic._MainLogic.setUIEvent("same_bt", UIEventType.BUTTON, null);
+    //  else
+    //    MainLogic._MainLogic.setUIEvent("different_bt", UIEventType.BUTTON, null);
+    //}
 
-    if (Input.GetKeyUp(KeyCode.E))
-    {
-      //強制答錯題目
-      bool correct = GameLogic._GameLogic.Correct(QuestionAnswer.Same);
-      if (correct)
-        MainLogic._MainLogic.setUIEvent("different_bt", UIEventType.BUTTON, null);
-      else
-        MainLogic._MainLogic.setUIEvent("same_bt", UIEventType.BUTTON, null);
-    }
+    //if (Input.GetKeyUp(KeyCode.E))
+    //{
+    //  //強制答錯題目
+    //  bool correct = GameLogic._GameLogic.Correct(QuestionAnswer.Same);
+    //  if (correct)
+    //    MainLogic._MainLogic.setUIEvent("different_bt", UIEventType.BUTTON, null);
+    //  else
+    //    MainLogic._MainLogic.setUIEvent("same_bt", UIEventType.BUTTON, null);
+    //}
 
     if (currentstate == state.IDLE){
       time -= Time.deltaTime;
-      msd.time += Time.deltaTime;
 
       if (time <= 0.0f){
         time = 0.0f;
@@ -219,6 +218,8 @@ public class GameScene : MonoBehaviour,IScene
     else if (currentstate == state.SAME)
     {
       bool correct = GameLogic._GameLogic.Correct(QuestionAnswer.Same);
+      ActiveDifferentPoint(false);
+      logic_timer = 1.0f;
       currentstate = correct ? state.correct : state.Incorrect;
       return;
     }
@@ -226,28 +227,40 @@ public class GameScene : MonoBehaviour,IScene
     else if (currentstate == state.DIFFERENT)
     {
       bool correct = GameLogic._GameLogic.Correct(QuestionAnswer.Different);
+      ActiveDifferentPoint(false);
+      logic_timer = 1.0f;
       currentstate = correct ? state.correct : state.Incorrect;
       return;
     }
 
     else if (currentstate == state.correct)
     {
-      //對
-      AudioController._AudioController.playOverlapEffect("Sound_13");
-      showcorrect(true);
-      logic_timer = 0.5f;
-      msd.correct++;
-      currentstate = state.determination_done;
+      logic_timer -= Time.deltaTime;
+      if (logic_timer <= 0.0f){
+        //對
+        AudioController._AudioController.playOverlapEffect("Sound_13");
+        showcorrect(true);
+        logic_timer = 0.5f;
+        msd.correct++;
+        currentstate = state.determination_done;
+        return;
+      }
     }
 
     else if (currentstate == state.Incorrect)
     {
-      //錯誤
-      AudioController._AudioController.playOverlapEffect("Sound_32");
-      showcorrect(false);
-      logic_timer = 0.5f;
-      msd.incorrect++;
-      currentstate = state.determination_done;
+      logic_timer -= Time.deltaTime;
+      if (logic_timer <= 0.0f)
+      {
+        //錯誤
+        AudioController._AudioController.playOverlapEffect("Sound_32");
+        showcorrect(false);
+        logic_timer = 0.5f;
+        msd.incorrect++;
+        currentstate = state.determination_done;
+        return;
+      }
+
     }
 
     else if (currentstate == state.determination_done)
@@ -257,6 +270,13 @@ public class GameScene : MonoBehaviour,IScene
       {
         closecorrect();
         currentstate = state.check_next_question;
+        //該關消耗時間 += (每題給予時間 - 現在目前剩餘時間) = 消耗時間
+        msd.time += config.Time - time;
+        //確保該關消耗時間不會超過LevelTime
+        if (msd.time >= config.LevelTime)
+          msd.time = config.LevelTime;
+
+        return;
       }
     }
 
@@ -270,6 +290,7 @@ public class GameScene : MonoBehaviour,IScene
       else
       {
         currentstate = state.pre_next_question;
+        return;
       }
     }
 
@@ -287,10 +308,18 @@ public class GameScene : MonoBehaviour,IScene
 
       //判斷是不是更好紀錄
       PlayerPrefsManager._PlayerPrefsManager.updateRecord(level, msd.time, msd.correct);
-      PlayerPrefsManager._PlayerPrefsManager.updateMaxlevel();
+      //PlayerPrefsManager._PlayerPrefsManager.updateMaxlevel();
 
       UIDialog._UIDialog.show(new summaryDialog(msd.time, msd.correct, new InteractiveDiaLogHandler[] {
-        ()=>{ 
+        ()=>{
+          if(PlayerPrefsManager._PlayerPrefsManager.GetRecordStar(level) > 0 &&
+          int.Parse(level )>= JsonLoader._JsonLoader.gettotallevelcount()){
+            //進入全破畫面
+            pDisposeHandler( SceneDisposeReason.USER_ACTION,null);
+            return;
+          }
+          //pDisposeHandler( SceneDisposeReason.USER_ACTION,null);
+          //return;
           //返回關卡選擇
           pDisposeHandler( SceneDisposeReason.USER_EXIT,null);
         },
@@ -333,6 +362,7 @@ public class GameScene : MonoBehaviour,IScene
   public void resetQuestion(){
     GameLogic._GameLogic.NextQuest();
     updatePoint();
+    ActiveDifferentPoint(true);
   }
 
   public void resetLevel(){
@@ -353,11 +383,11 @@ public class GameScene : MonoBehaviour,IScene
 
   public void nextLevel()
   {
+    PlayerPrefsManager._PlayerPrefsManager.updateMaxlevel();
+
     PlayerPrefsManager._PlayerPrefsManager.currentlevel++;
     level = PlayerPrefsManager._PlayerPrefsManager.currentlevel.ToString();
     config = JsonLoader._JsonLoader.GetDataconfig(level);
-    PlayerPrefsManager._PlayerPrefsManager.updateMaxlevel();
-
 
     float cellwidth = area.x / config.W;
     float cellhight = area.y / config.H;
@@ -457,6 +487,41 @@ public class GameScene : MonoBehaviour,IScene
     updateDebugInfo();
   }
 
+  void ActiveDifferentPoint(bool active){
+    GameLogic.Point[,] rightpoints = GameLogic._GameLogic.GetRightPoints();
+    GameLogic.Point[,] leftpoints = GameLogic._GameLogic.GetLeftPoints();
+
+    for (int i = 0; i < config.H; i++)
+    {
+      for (int j = 0; j < config.W; j++)
+      {
+        int index = i * config.W + j;
+
+        GameObject point = right_point_list[index];
+        bool diff  = rightpoints[i,j].different;
+
+        if (active){
+          point.gameObject.SetActive(active);
+        }
+        else{
+          point.gameObject.SetActive(diff);
+        }
+
+
+        point = left_point_list[index];
+        diff = leftpoints[i, j].different;
+
+        if (active){
+          point.gameObject.SetActive(active);
+        }
+        else{
+          point.gameObject.SetActive(diff);
+        }
+      }
+    }
+
+  }
+
   void updateDebugInfo(){
     if (!debug)
       return;
@@ -485,6 +550,7 @@ public class GameScene : MonoBehaviour,IScene
       }
     }
   }
+
 
 
   string getHSV_string(GameLogic.Point p){

@@ -45,6 +45,7 @@ public class LevelScene : MonoBehaviour,IScene
     }
 
     AudioController._AudioController.crossFadeBGM("BGM_25",true);
+    //AdsHelper._AdsHelper.RequestInterstitialAds();
     buildLevel_sit();
     mInited = true;
     return;
@@ -83,10 +84,10 @@ public class LevelScene : MonoBehaviour,IScene
     // Update is called once per frame
     void Update()
     {
-    if(Input.GetKeyUp(KeyCode.R)){
-      //root.transform.Find("ScreenSlider").GetComponent<ScreenSlider>().setVertialNormalizedPosition(500.0f);
+    //if(Input.GetKeyUp(KeyCode.R)){
+    //  //root.transform.Find("ScreenSlider").GetComponent<ScreenSlider>().setVertialNormalizedPosition(500.0f);
 
-    }
+    //}
   } 
 
   GameObject instantiateObject(GameObject parent, string name){
@@ -109,8 +110,7 @@ public class LevelScene : MonoBehaviour,IScene
 
     float column_interval = 33;
 
-    //int targetlevel = 13;
-    int targetlevel = PlayerPrefsManager._PlayerPrefsManager.currentmaxlevel;
+    int targetlevel = PlayerPrefsManager._PlayerPrefsManager.currentlevel;
     int targetrow = 0;
 
     GameObject sliderroot = root.transform.Find("ScreenSlider").gameObject;
@@ -143,7 +143,7 @@ public class LevelScene : MonoBehaviour,IScene
         level_bt.GetComponent<RectTransform>().localScale = new Vector3(1.0f, 1.0f, 1.0f);
         Button bt = level_bt.transform.Find("Button").GetComponent<Button>();
         level_bt.transform.Find("Button/text").GetComponent<TextMeshProUGUI>().text = 
-          "Level" + level+"\n" + PlayerPrefsManager._PlayerPrefsManager.GetRecordStar(level.ToString());
+          string.Format(JsonLoader._JsonLoader.GetString("201"),level) + PlayerPrefsManager._PlayerPrefsManager.GetRecordStar("203",level.ToString());
 
         float x = level_size.x * 0.5f + level_size.x  * j + column_interval * j;
         float y = -level_size.y * 0.5f - level_size.y * i - row_interval * i;
@@ -176,7 +176,10 @@ public class LevelScene : MonoBehaviour,IScene
     Debug.Log("level : " + level + "，was been clicked");
 
     PlayerPrefsManager._PlayerPrefsManager.currentlevel = int.Parse(level);
-    //進入關卡
-    pDisposeHandler(SceneDisposeReason.USER_ACTION,null);
+
+    AdsHelper._AdsHelper.ShowInterstitialAds(() => {
+      //進入關卡
+      pDisposeHandler(SceneDisposeReason.USER_ACTION, null);
+    });
   }
 }

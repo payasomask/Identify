@@ -32,6 +32,7 @@ public class summaryDialog :  IDialogContext
     return DialogType.NORMAL;
   }
 
+  int star = 0;
   public GameObject init(int dlgIdx, AssetbundleLoader abl){
       dlgGO = abl.InstantiatePrefab("summaryDialog");
 
@@ -40,13 +41,13 @@ public class summaryDialog :  IDialogContext
     GameDataConfig config = JsonLoader._JsonLoader.GetDataconfig(level.ToString());
     float timeRate = JsonLoader._JsonLoader.GetTimeRate(PlayerPrefsManager._PlayerPrefsManager.currentlevel.ToString(),time)*100.0f;
     float correctRate = JsonLoader._JsonLoader.GetCorrectRate(PlayerPrefsManager._PlayerPrefsManager.currentlevel.ToString(), correct) * 100.0f;
-    int star = JsonLoader._JsonLoader.GetStar(PlayerPrefsManager._PlayerPrefsManager.currentlevel.ToString(), time, correct);
+    star = JsonLoader._JsonLoader.GetStar(PlayerPrefsManager._PlayerPrefsManager.currentlevel.ToString(), time, correct);
 
     string summary_text = string.Format(JsonLoader._JsonLoader.GetString("401"), time, timeRate) + "\n";
     summary_text += JsonLoader._JsonLoader.GetString("402") +"    " + correct +"\n";
     summary_text += JsonLoader._JsonLoader.GetString("403") +"    " + (config.Amount - correct) + "\n";
     summary_text += string.Format(JsonLoader._JsonLoader.GetString("404"), correctRate) + "\n";
-    summary_text += JsonLoader._JsonLoader.Star_string(star);
+    summary_text += JsonLoader._JsonLoader.Star_string("408",star);
 
     TextMeshPro t = dlgGO.transform.Find("bg/text").GetComponent<TextMeshPro>();
     t.text = summary_text;
@@ -75,9 +76,15 @@ public class summaryDialog :  IDialogContext
     if(type == UIEventType.BUTTON){
       if(name == "level_list_bt")
       {
+
+        //如果取得超過0個星更新最大關卡，修復玩家點選選擇關卡的按鈕返回後沒有下一關可以玩
+        if (star > 0)
+          PlayerPrefsManager._PlayerPrefsManager.updateMaxlevel();
+
         //AudioController._AudioController.playOverlapEffect("yes_no_使用道具_按鍵音效");
         if (bt_handlers[0] != null)
           bt_handlers[0]();
+
         return DialogResponse.TAKEN_AND_DISMISS;
       }
       else if(name == "restart_bt")

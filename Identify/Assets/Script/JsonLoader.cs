@@ -10,7 +10,7 @@ public class JsonLoader : MonoBehaviour
   public static JsonLoader _JsonLoader = null;
 
   Dictionary<string, ml_string> string_dic = new Dictionary<string, ml_string>();
-  string[] available_language_arr = new string[] { "US", "TW" };
+  string[] available_language_arr;
   Dictionary<string, GameDataConfig> data_dic = new Dictionary<string, GameDataConfig>();
 
   private void Awake(){
@@ -25,6 +25,18 @@ public class JsonLoader : MonoBehaviour
 
     Dictionary<string,object> jsontable = (Dictionary<string, object>)MiniJSON.Json.Deserialize(getJson());
     Dictionary<string, object> tablesheets = (Dictionary<string, object>)jsontable["N01_Identify_Setup.xlsx"];
+
+    //parse lang_sheet
+    Dictionary<string, object> Lang_sheets = (Dictionary<string, object>)tablesheets["Language"];
+    Dictionary<string, object> langdata = (Dictionary<string, object>)Lang_sheets["1"];
+    PlayerPrefsManager._PlayerPrefsManager.Language = (string)langdata["Now"];
+    List<object> lang_list = (List<object>)langdata["Language"];
+    List<string> tmp_list = new List<string>(lang_list.Count);
+    for (int i = 0; i < lang_list.Count; i++){
+      string lang = (string)lang_list[i];
+      tmp_list.Add(lang);
+    }
+    available_language_arr = tmp_list.ToArray();
 
     //parse string_sheet
     Dictionary<string, object> String_sheets = (Dictionary<string, object>) tablesheets["String"];
@@ -71,6 +83,8 @@ public class JsonLoader : MonoBehaviour
       tmp.LevelTime = tmp.Amount * tmp.Time;
       data_dic.Add(data_key, tmp);
     }
+
+
 
     Debug.Log("562 - Loaded Json");
   }
@@ -160,7 +174,10 @@ public class JsonLoader : MonoBehaviour
     return UtilityHelper.GetSmallValue(timestar, correctstar);
   }
 
-  public string Star_string(int star){
+  public string Star_string(string formatid, int star){
+
+    string rich_format = GetString(formatid);
+
     int maxstar = 3;
 
     string star_string = string.Empty;
@@ -173,7 +190,7 @@ public class JsonLoader : MonoBehaviour
         star_string += "¡¸";
     }
 
-    return star_string;
+    return rich_format + star_string;
   }
 
 

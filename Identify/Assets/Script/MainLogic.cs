@@ -53,7 +53,10 @@ public class PlayerPrefsManager
     get { return _Language; }
     set
     {
-      _Language = value;
+      if(value == "default")
+        _Language = Application.systemLanguage == SystemLanguage.ChineseTraditional ? "TW" : "US";
+      else
+        _Language = value;
       savePlayerPrefsString("Language", value);
     }
   }
@@ -138,7 +141,6 @@ public class PlayerPrefsManager
     _tutorial = PlayerPrefs.GetString(vibrateKey, "off");
     _currentlevel = PlayerPrefs.GetInt(currentlevelKey, 1);
     _currentmaxlevel = PlayerPrefs.GetInt(currentmaxlevelKey, 1);
-    _Language = Application.systemLanguage == SystemLanguage.Chinese ? "TW" : "US";
     //_Language = PlayerPrefs.GetString(LanguageKey, "US");
     _AdministationVersion = PlayerPrefs.GetString(_AdministationVersionKey, "");
 
@@ -165,15 +167,26 @@ public class PlayerPrefsManager
     return true;
   }
 
-  public string GetRecordStar(string level){
+  public string GetRecordStar(string formatid, string level){
     int star = 0;
     if (hasRecord() == false)
-      return JsonLoader._JsonLoader.Star_string(star);
+      return JsonLoader._JsonLoader.Star_string(formatid,star);
 
     if(_Record.ContainsKey(level) == false)
-      return JsonLoader._JsonLoader.Star_string(star);
+      return JsonLoader._JsonLoader.Star_string(formatid,star);
 
-    return JsonLoader._JsonLoader.Star_string(_Record[level].star);
+    return JsonLoader._JsonLoader.Star_string(formatid,_Record[level].star);
+  }
+  public int GetRecordStar(string level)
+  {
+    int star = 0;
+    if (hasRecord() == false)
+      return 0;
+
+    if (_Record.ContainsKey(level) == true)
+      return _Record[level].star;
+
+    return star;
   }
   public void updateRecord(string level,float time,int correct){
     if (_Record == null)
@@ -204,8 +217,10 @@ public class PlayerPrefsManager
   }
   public void updateMaxlevel(){
 
-    if (_currentlevel > _currentmaxlevel)
-      currentmaxlevel = _currentlevel;
+    int nextlevel =  _PlayerPrefsManager.currentlevel+1;
+
+    if (nextlevel > _currentmaxlevel)
+      currentmaxlevel = nextlevel;
   }
 
   public void resetplayerprefs(){
@@ -607,6 +622,7 @@ public class MainLogic : MonoBehaviour
   {
     _MainLogic = this;
     PlayerPrefsManager._PlayerPrefsManager = new PlayerPrefsManager();
+    JsonLoader._JsonLoader.Init();
     AssetbundleLoader._AssetbundleLoader = new AssetbundleLoader();
     mER = new EmbeddedSceneSettings();
 
@@ -655,7 +671,6 @@ public class MainLogic : MonoBehaviour
     //tehbc2d.size =new Vector2(1366f, 768f);
 
     FontManager._FontManager.init();
-    JsonLoader._JsonLoader.Init();
 
     camera_go = instantiateObject(dynamicObj, "Common_Camera");
 
@@ -724,18 +739,18 @@ public class MainLogic : MonoBehaviour
     //Create First Scene
     //
     Debug.Log("transit to first scene...");
-    //mCurrentSceneTransition = new SceneTransition("IntroScene", new object[] { }, delegate ()
-    //{
-    //  mCurrentSceneTransition = null;
-    //});
+    mCurrentSceneTransition = new SceneTransition("IntroScene", new object[] { }, delegate ()
+    {
+      mCurrentSceneTransition = null;
+    });
     //mCurrentSceneTransition = new SceneTransition("GameScene", new object[] { }, delegate ()
     //{
     //  mCurrentSceneTransition = null;
     //});
-    mCurrentSceneTransition = new SceneTransition("LobbyScene", new object[] { }, delegate ()
-    {
-      mCurrentSceneTransition = null;
-    });
+    //mCurrentSceneTransition = new SceneTransition("LobbyScene", new object[] { }, delegate ()
+    //{
+    //  mCurrentSceneTransition = null;
+    //});
     //mCurrentSceneTransition = new SceneTransition("LevelListScene", new object[] { }, delegate ()
     //{
     //  mCurrentSceneTransition = null;
@@ -751,6 +766,7 @@ public class MainLogic : MonoBehaviour
     //#endif
 
     AdsHelper._AdsHelper.init();
+    
     //AdsHelper._AdsHelper.RequestInterstitialAds();
   }
 
@@ -886,6 +902,22 @@ public class MainLogic : MonoBehaviour
     }
     else
     if (mS.getSceneName() == "GameScene")
+    {
+      if (sdr == SceneDisposeReason.USER_EXIT)
+      {
+        mCurrentSceneTransition = new SceneTransition("LevelListScene", new object[] { }, delegate ()
+        {
+          mCurrentSceneTransition = null;
+        }, true);
+      }
+      else if (sdr == SceneDisposeReason.USER_ACTION){
+        mCurrentSceneTransition = new SceneTransition("AllClearScene", new object[] { }, delegate ()
+        {
+          mCurrentSceneTransition = null;
+        }, true);
+      }
+    }
+    else if (mS.getSceneName() == "AllClearScene")
     {
       if (sdr == SceneDisposeReason.USER_EXIT)
       {

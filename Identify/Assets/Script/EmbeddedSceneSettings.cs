@@ -48,6 +48,12 @@ public class EmbeddedSceneSettings : ISceneSettings{
     }},
 
 
+   {"AllClearScene", new object[]{
+      typeof(AllClearScene),
+      null,
+      null
+    }},
+
   };
 
   public object getSettings(string gameName, SceneSettingsType type){

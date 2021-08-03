@@ -7,7 +7,7 @@ using UnityEngine;
 public class AdsHelper : MonoBehaviour
 {
   public static AdsHelper _AdsHelper = null;
-  public bool inited = false;
+  bool inited = false;
   //float Adscale;
   int RectangleBannerSize = 200;
   //ca-app-pub-4959011404007459/2245648839
@@ -45,7 +45,7 @@ public class AdsHelper : MonoBehaviour
     {
       Debug.Log("MobileAds init completed");
 
-
+      RequestInterstitialAds();
       //Adscale = MobileAds.Utils.GetDeviceScale();
       //Debug.Log("645 - GetDeviceScale" + Adscale);
 
@@ -167,16 +167,16 @@ public class AdsHelper : MonoBehaviour
       return;
 
 #if UNITY_ANDROID
-    string adUnitId = "ca-app-pub-3940256099942544/6300978111";
+    string adUnitId = "ca-app-pub-4959011404007459/4599439300";
 #elif UNITY_IPHONE
-            string adUnitId = "ca-app-pub-3940256099942544/2934735716";
+            string adUnitId = "ca-app-pub-4959011404007459/4599439300";
 #else
             string adUnitId = "unexpected_platform";
 #endif
 
     //這種size的只有高度(32、50)會有影響，但是寬度也不能亂給..目前只測出320、AdSize.FullWidth
     //AdSize size = new AdSize(AdSize.FullWidth, 32);
-    AdSize size = new AdSize(320, 32);
+    AdSize size = new AdSize(320, 50);
 #if !UNITY_EDITOR && UNITY_ANDROID
     this.bannerView = new BannerView(adUnitId, size, postion);
 
@@ -230,14 +230,17 @@ public class AdsHelper : MonoBehaviour
     return;
 #endif
     if (interstitial != null)
-      return;
+    {
+      interstitial.Destroy();
+      interstitial = null;
+    }
 
 #if UNITY_ANDROID
-    string adUnitId = "ca-app-pub-3940256099942544/1033173712";
+    string adUnitId = "ca-app-pub-4959011404007459/2356419346";
 #elif UNITY_IPHONE
-        string adUnitId = "ca-app-pub-3940256099942544/4411468910";
+        string adUnitId = "ca-app-pub-4959011404007459/2356419346";
 #else
-        string adUnitId = "unexpected_platform";
+    string adUnitId = "unexpected_platform";
 #endif
 
     //在 iOS 上，對像是InterstitialAd一次性使用對象。
@@ -268,17 +271,36 @@ public class AdsHelper : MonoBehaviour
   public void ShowInterstitialAds(CommonAction OnClosed)
   {
 
+    OnAdClosed = OnClosed;
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
+    if (OnClosed != null)
+      OnClosed();
+    return;
+#endif
+    //Debug.Log("519 - ShowRewardAd");
+
     if (this.interstitial == null)
-    {
-      Debug.Log("interstitialAds is null Requset it first");
       return;
-    }
+    //Debug.Log("519 - ShowRewardAd != null");
 
     if (this.interstitial.IsLoaded())
     {
-      OnAdClosed = OnClosed;
+      //Debug.Log("519 - ShowRewardAd IsLoaded");
       this.interstitial.Show();
       AudioController._AudioController.toggleMusic(false);
+      AudioController._AudioController.toggleAudio(false);
+
+    }
+    else
+    {
+      Debug.Log("519 - interstitial Is Not Loaded");
+      if (OnClosed != null)
+        OnClosed();
+
+      if (PlayerPrefsManager._PlayerPrefsManager.Music_T == "on")
+        AudioController._AudioController.toggleMusic(true);
+      if (PlayerPrefsManager._PlayerPrefsManager.Audio_T == "on")
+        AudioController._AudioController.toggleAudio(true);
     }
   }
 
@@ -347,6 +369,7 @@ public class AdsHelper : MonoBehaviour
       this.rewardedAd.Show();
       OnRewardAdEarned = OnEarned;
       AudioController._AudioController.toggleMusic(false);
+      AudioController._AudioController.toggleAudio(false);
     }
     else
     {
@@ -354,7 +377,10 @@ public class AdsHelper : MonoBehaviour
       if (OnFailedLoad != null)
         OnFailedLoad();
 
-      AudioController._AudioController.toggleMusic(true);
+      if (PlayerPrefsManager._PlayerPrefsManager.Music_T == "on")
+        AudioController._AudioController.toggleMusic(true);
+      if (PlayerPrefsManager._PlayerPrefsManager.Audio_T == "on")
+        AudioController._AudioController.toggleAudio(true);
     }
   }
 
@@ -389,7 +415,10 @@ public class AdsHelper : MonoBehaviour
       OnAdClosed();
       OnAdClosed = null;
     }
-    AudioController._AudioController.toggleMusic(true);
+    if (PlayerPrefsManager._PlayerPrefsManager.Music_T == "on")
+      AudioController._AudioController.toggleMusic(true);
+    if (PlayerPrefsManager._PlayerPrefsManager.Audio_T == "on")
+      AudioController._AudioController.toggleAudio(true);
     Debug.Log("519 AdFailedToLoad sender : "+ sender .GetType()+ "，Error " + args.LoadAdError);
   }
   // Called when an ad is clicked.
@@ -409,15 +438,22 @@ public class AdsHelper : MonoBehaviour
         OnAdClosed();
         OnAdClosed = null;
       }
-      AudioController._AudioController.toggleMusic(true);
+      if(PlayerPrefsManager._PlayerPrefsManager.Music_T == "on")
+        AudioController._AudioController.toggleMusic(true);
+      if(PlayerPrefsManager._PlayerPrefsManager.Audio_T == "on")
+        AudioController._AudioController.toggleAudio(true);
+
     }
     else if(sender.GetType() == typeof(GoogleMobileAds.Api.InterstitialAd)){
-
+      RequestInterstitialAds();
       if (OnAdClosed != null){
         OnAdClosed();
         OnAdClosed = null;
       }
-      AudioController._AudioController.toggleMusic(true);
+      if (PlayerPrefsManager._PlayerPrefsManager.Music_T == "on")
+        AudioController._AudioController.toggleMusic(true);
+      if (PlayerPrefsManager._PlayerPrefsManager.Audio_T == "on")
+        AudioController._AudioController.toggleAudio(true);
     }
     Debug.Log("AdClosed Get call back from native");
   }
@@ -446,10 +482,22 @@ public class AdsHelper : MonoBehaviour
         OnAdClosed = null;
         Debug.Log("519 AdFailedToShow : " + args);
       }
-      AudioController._AudioController.toggleMusic(true);
+      if (PlayerPrefsManager._PlayerPrefsManager.Music_T == "on")
+        AudioController._AudioController.toggleMusic(true);
+      if (PlayerPrefsManager._PlayerPrefsManager.Audio_T == "on")
+        AudioController._AudioController.toggleAudio(true);
     }
     else if (sender.GetType() == typeof(GoogleMobileAds.Api.InterstitialAd)){
-      AudioController._AudioController.toggleMusic(true);
+      if (OnAdClosed != null)
+      {
+        OnAdClosed();
+        OnAdClosed = null;
+        Debug.Log("519 AdFailedToShow : " + args);
+      }
+      if (PlayerPrefsManager._PlayerPrefsManager.Music_T == "on")
+        AudioController._AudioController.toggleMusic(true);
+      if (PlayerPrefsManager._PlayerPrefsManager.Audio_T == "on")
+        AudioController._AudioController.toggleAudio(true);
     }
     Debug.Log("AdFailedToShow : " + args);
 
