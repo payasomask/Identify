@@ -138,7 +138,7 @@ public class PlayerPrefsManager
     _Audio_T = PlayerPrefs.GetString(audioKey, "on");
     _Music_T = PlayerPrefs.GetString(musicKey, "on");
     _Vibrate_T = PlayerPrefs.GetString(vibrateKey, "on");
-    _tutorial = PlayerPrefs.GetString(vibrateKey, "off");
+    _tutorial = PlayerPrefs.GetString(tutorialKey, "off");
     _currentlevel = PlayerPrefs.GetInt(currentlevelKey, 1);
     _currentmaxlevel = PlayerPrefs.GetInt(currentmaxlevelKey, 1);
     //_Language = PlayerPrefs.GetString(LanguageKey, "US");
