@@ -3,11 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
-public class JsonLoader : MonoBehaviour
+public class JsonLoader : IAssetReferenceManager
 {
 
   public static JsonLoader _JsonLoader = null;
+
+  string json_text;
 
   Dictionary<string, ml_string> string_dic = new Dictionary<string, ml_string>();
   string[] available_language_arr;
@@ -15,6 +18,7 @@ public class JsonLoader : MonoBehaviour
 
   private void Awake(){
     _JsonLoader = this;
+    mManagerName = "JsonLoader";
   }
 
   private void Start(){
@@ -22,8 +26,7 @@ public class JsonLoader : MonoBehaviour
 
   public void Init(){
     //start init
-
-    Dictionary<string,object> jsontable = (Dictionary<string, object>)MiniJSON.Json.Deserialize(getJson());
+    Dictionary<string,object> jsontable = (Dictionary<string, object>)MiniJSON.Json.Deserialize(json_text);
     Dictionary<string, object> tablesheets = (Dictionary<string, object>)jsontable["N01_Identify_Setup.xlsx"];
 
     //parse lang_sheet
@@ -89,21 +92,18 @@ public class JsonLoader : MonoBehaviour
     Debug.Log("562 - Loaded Json");
   }
 
+//  string getJson(){
+//    string json_text;
+//#if UNITY_ANDROID || UNITY_EDITOR
+//    TextAsset t = (TextAsset)Resources.Load("N01_Identify_Setup.xlsx");
+//    json_text = t.text;
+//#elif UNITY_STANDALONE_WIN
+//    string file_path = Path.Combine(Application.streamingAssetsPath, "N01_Identify_Setup.xlsx.json");
+//    return File.ReadAllText(file_path);
+//#endif
 
-
-  string getJson(){
-    string json_text;
-#if UNITY_ANDROID || UNITY_EDITOR
-    TextAsset t = (TextAsset)Resources.Load("N01_Identify_Setup.xlsx");
-    json_text = t.text;
-#elif UNITY_STANDALONE_WIN
-    string file_path = Path.Combine(Application.streamingAssetsPath, "N01_Identify_Setup.xlsx.json");
-    return File.ReadAllText(file_path);
-#endif
-
-    return json_text;
-  }
-
+//    return json_text;
+//  }
   public string GetString(string key){
     if (string_dic.ContainsKey(key)){
       return string_dic[key];
@@ -230,6 +230,56 @@ public class JsonLoader : MonoBehaviour
     return ret;
   }
 
+  //public void setAllAssetReference(string[] assetsGUID){
+  //  json_assetreference = new AssetReference(assetsGUID);   
+  //}
+
+
+  public override void LoadAssetReference(AssetReference ar)
+  {
+    if (AssetReferenceStatus_list == null)
+      AssetReferenceStatus_list = new List<AssetReferenceStatus>();
+    if (ar == null)
+      return;
+    //string id = System.Guid.NewGuid().ToString();
+    AssetReferenceStatus ars = new AssetReferenceStatus();
+    ars.ar = ar;
+    ars.Loaded = false;
+
+    ars.ar.LoadAssetAsync<TextAsset>().Completed += handle => {
+      json_text = handle.Result.text;
+      AssetReferenceStatus_list.Remove(ars);
+      Addressables.Release(handle);
+      Init();//加載完成自動讀取
+    };
+    AssetReferenceStatus_list.Add(ars);
+  }
+
+  public override IAssetReferenceManager GetManager()
+  {
+    return this;
+  }
+
+  public override bool IsLoadAssetReferenceDone()
+  {
+    if (AssetReferenceStatus_list == null)
+    {
+      Debug.Log("513 - "+mManagerName+" need LoadAssetReference() BEFORE check IsLoadAssetReferenceDone()");
+      return false;
+    }
+    return AssetReferenceStatus_list.Count == 0;
+  }
+  //public bool IsLoadAssetReferenceDone(){
+  //  if (AssetReferenceStatus_list == null)
+  //  {
+  //    Debug.Log("need LoadAssetReference() BEFORE check IsLoadAssetReferenceDone()");
+  //    return false;
+  //  }
+  //  return AssetReferenceStatus_list.Count == 0;
+  //}
+  //public void LoadAsset(){
+  //  LoadAssetReference();
+  //}
 }
 
 public class GameDataConfig
@@ -268,4 +318,9 @@ public class GameRecord{
   public int star;
 }
 
+
+public class AssetReferenceStatus{
+  public AssetReference ar = null;
+  public bool Loaded = false;
+}
 

@@ -54,6 +54,11 @@ public class EmbeddedSceneSettings : ISceneSettings{
       null
     }},
 
+      {"PatchScene", new object[]{
+      typeof(PatchScene),
+      null,
+      null
+    }},
   };
 
   public object getSettings(string gameName, SceneSettingsType type){

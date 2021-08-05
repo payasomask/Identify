@@ -154,7 +154,7 @@ public class PlayerPrefsManager
         GameRecord re = v.Value;
         _Record.Add(v.Key, re);
       }
-      Debug.Log("548 - Record count : " + _Record.Count);
+      //Debug.Log("548 - Record count : " + _Record.Count);
     }
   }
 
@@ -622,7 +622,6 @@ public class MainLogic : MonoBehaviour
   {
     _MainLogic = this;
     PlayerPrefsManager._PlayerPrefsManager = new PlayerPrefsManager();
-    JsonLoader._JsonLoader.Init();
     AssetbundleLoader._AssetbundleLoader = new AssetbundleLoader();
     mER = new EmbeddedSceneSettings();
 
@@ -751,6 +750,10 @@ public class MainLogic : MonoBehaviour
     //{
     //  mCurrentSceneTransition = null;
     //});
+    //mCurrentSceneTransition = new SceneTransition("PatchScene", new object[] { }, delegate ()
+    //{
+    //  mCurrentSceneTransition = null;
+    //});
     //mCurrentSceneTransition = new SceneTransition("LevelListScene", new object[] { }, delegate ()
     //{
     //  mCurrentSceneTransition = null;
@@ -835,6 +838,23 @@ public class MainLogic : MonoBehaviour
     {
       if (sdr == SceneDisposeReason.USER_EXIT)
       {
+        mCurrentSceneTransition = new SceneTransition("PatchScene", new object[] { }, delegate ()
+        {
+          mCurrentSceneTransition = null;
+        }, true);
+      }
+
+    }
+    else if (mS.getSceneName() == "PatchScene")
+    {
+      if (sdr == SceneDisposeReason.USER_EXIT)
+      {
+        mCurrentSceneTransition = new SceneTransition("IntroScene", new object[] { }, delegate ()
+        {
+          mCurrentSceneTransition = null;
+        }, true);
+      }
+      else if(sdr == SceneDisposeReason.USER_ACTION){
         mCurrentSceneTransition = new SceneTransition("LobbyScene", new object[] { }, delegate ()
         {
           mCurrentSceneTransition = null;
